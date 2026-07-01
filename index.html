@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAGE Companion — Testing Instructions</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #1a4731;
+    --green: #2d6a4f;
+    --green-mid: #52b788;
+    --green-light: #d8f3dc;
+    --green-faint: #f0faf3;
+    --amber: #b45309;
+    --amber-light: #fef3c7;
+    --amber-border: #fcd34d;
+    --blue: #1e40af;
+    --blue-light: #dbeafe;
+    --blue-border: #93c5fd;
+    --red: #991b1b;
+    --red-light: #fee2e2;
+    --purple: #6d28d9;
+    --purple-light: #ede9fe;
+    --purple-border: #c4b5fd;
+    --gray-900: #111827;
+    --gray-700: #374151;
+    --gray-500: #6b7280;
+    --gray-300: #d1d5db;
+    --gray-100: #f3f4f6;
+    --gray-50: #f9fafb;
+    --white: #ffffff;
+    --radius: 10px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    line-height: 1.65;
+    font-size: 15px;
+  }
+
+  header {
+    background: var(--green-dark);
+    padding: 48px 0 40px;
+    text-align: center;
+  }
+  header .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.12);
+    color: #a7f3d0;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--white);
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+  header p { color: #6ee7b7; font-size: 14px; font-weight: 300; }
+
+  .meta-bar {
+    background: var(--green);
+    padding: 14px 40px;
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .meta-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #d1fae5; }
+  .meta-item strong { color: white; }
+  .meta-item a { color: #6ee7b7; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 12px; }
+  .meta-item a:hover { text-decoration: underline; }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* TOC */
+  .toc { background: var(--white); border: 1px solid var(--gray-300); border-radius: var(--radius); padding: 24px 28px; margin-bottom: 40px; }
+  .toc h3 { font-family: 'DM Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-500); margin-bottom: 14px; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+  .toc a { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 7px; background: var(--gray-50); color: var(--gray-700); text-decoration: none; font-size: 13px; font-weight: 500; transition: background 0.15s, color 0.15s; }
+  .toc a:hover { background: var(--green-light); color: var(--green-dark); }
+  .toc a .num { width: 22px; height: 22px; background: var(--green); color: white; border-radius: 50%; font-size: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+
+  /* WHAT'S NEW BANNER */
+  .whats-new {
+    background: var(--white);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius);
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+  .whats-new-header {
+    background: var(--green);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .whats-new-header h2 { font-family: 'DM Serif Display', serif; font-size: 18px; font-weight: 400; color: white; }
+  .whats-new-body { padding: 20px 24px; }
+  .new-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+  .new-item {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--gray-700);
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    line-height: 1.5;
+  }
+  .new-item .ni { flex-shrink: 0; font-size: 15px; }
+
+  /* BROWSER SETUP */
+  .browser-setup { background: var(--white); border: 1px solid var(--gray-300); border-radius: var(--radius); padding: 28px; margin-bottom: 40px; }
+  .browser-setup h2 { font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; color: var(--green-dark); margin-bottom: 16px; }
+  .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 16px; }
+  .option-card { border: 1px solid var(--gray-300); border-radius: 8px; padding: 14px 16px; background: var(--gray-50); }
+  .option-card .option-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--green); margin-bottom: 8px; }
+  .option-card ul { list-style: none; }
+  .option-card ul li { font-size: 13px; color: var(--gray-700); padding: 3px 0; border-bottom: 1px solid var(--gray-200); }
+  .option-card ul li:last-child { border-bottom: none; }
+  .option-card ul li::before { content: "→  "; color: var(--green-mid); font-weight: 600; }
+
+  /* WORKING LIST */
+  .working-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; margin-top: 12px; }
+  .working-item { background: var(--green-faint); border: 1px solid var(--green-light); border-radius: 7px; padding: 8px 12px; font-size: 13px; color: var(--green-dark); display: flex; align-items: center; gap: 8px; }
+  .working-item::before { content: "✅"; font-size: 13px; flex-shrink: 0; }
+  .pending-item { background: var(--amber-light); border: 1px solid var(--amber-border); border-radius: 7px; padding: 8px 12px; font-size: 13px; color: #78350f; display: flex; align-items: center; gap: 8px; }
+  .pending-item::before { content: "🚧"; font-size: 13px; flex-shrink: 0; }
+
+  /* SECTION */
+  .section { background: var(--white); border: 1px solid var(--gray-300); border-radius: var(--radius); margin-bottom: 32px; overflow: hidden; }
+  .section-header { background: var(--green); padding: 18px 28px; display: flex; align-items: center; gap: 12px; }
+  .section-header .icon { font-size: 20px; line-height: 1; }
+  .section-header h2 { font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; color: white; }
+  .section-body { padding: 28px; }
+
+  /* STEPS */
+  .steps { list-style: none; counter-reset: steps; }
+  .steps li { counter-increment: steps; display: flex; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px; color: var(--gray-700); line-height: 1.55; }
+  .steps li:last-child { border-bottom: none; }
+  .steps li::before { content: counter(steps); min-width: 24px; height: 24px; background: var(--green-light); color: var(--green-dark); border-radius: 50%; font-size: 12px; font-weight: 600; font-family: 'DM Mono', monospace; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .steps li strong { color: var(--gray-900); }
+
+  .sub-steps { list-style: none; margin-top: 8px; padding-left: 4px; }
+  .sub-steps li { font-size: 13px; color: var(--gray-500); padding: 3px 0; display: flex; gap: 8px; border: none !important; }
+  .sub-steps li::before { content: "–"; color: var(--green-mid); font-weight: 600; flex-shrink: 0; background: none !important; border-radius: 0 !important; min-width: auto !important; height: auto !important; font-size: 13px !important; }
+
+  /* SUB HEADING */
+  .sub-heading { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--green); margin: 24px 0 10px; padding-bottom: 6px; border-bottom: 2px solid var(--green-light); }
+  .sub-heading:first-child { margin-top: 0; }
+
+  /* CALLOUTS */
+  .callout { border-radius: 8px; padding: 14px 16px; margin: 16px 0; font-size: 13.5px; line-height: 1.55; display: flex; gap: 10px; align-items: flex-start; }
+  .callout .ci { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout.warn  { background: var(--amber-light); border: 1px solid var(--amber-border); color: #78350f; }
+  .callout.info  { background: var(--blue-light);  border: 1px solid var(--blue-border);  color: var(--blue); }
+  .callout.note  { background: var(--green-light); border: 1px solid var(--green-mid);    color: var(--green-dark); }
+  .callout.purple { background: var(--purple-light); border: 1px solid var(--purple-border); color: var(--purple); }
+  .callout strong { font-weight: 600; }
+
+  /* UX NOTE */
+  .ux-note { background: #fdf4ff; border: 1px solid #d8b4fe; border-left: 4px solid #9333ea; border-radius: 0 8px 8px 0; padding: 14px 16px; margin: 16px 0; font-size: 13.5px; color: #4c1d95; line-height: 1.55; }
+  .ux-note .ux-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #7c3aed; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+
+  /* BACKLOG NOTE */
+  .backlog { background: #fef2f2; border: 1px solid #fca5a5; border-left: 4px solid #ef4444; border-radius: 0 8px 8px 0; padding: 14px 16px; margin: 16px 0; font-size: 13.5px; color: #7f1d1d; line-height: 1.55; display: flex; gap: 10px; align-items: flex-start; }
+
+  /* DATA TABLE */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .data-table thead tr { background: var(--green); color: white; }
+  .data-table thead th { padding: 10px 14px; text-align: left; font-weight: 500; font-size: 12px; letter-spacing: 0.04em; }
+  .data-table tbody tr:nth-child(even) { background: var(--gray-50); }
+  .data-table tbody tr:nth-child(odd)  { background: var(--white); }
+  .data-table tbody td { padding: 10px 14px; color: var(--gray-700); border-bottom: 1px solid var(--gray-100); }
+  .data-table tbody td:first-child { font-weight: 500; color: var(--gray-900); }
+
+  /* STRIPE */
+  .card-mono { font-family: 'DM Mono', monospace; font-size: 13px; background: var(--gray-100); padding: 2px 7px; border-radius: 4px; letter-spacing: 0.05em; color: var(--gray-900); }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; }
+  .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; font-size: 14px; color: var(--gray-700); border-bottom: 1px solid var(--gray-100); }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li .box { width: 18px; height: 18px; border: 2px solid var(--gray-300); border-radius: 4px; flex-shrink: 0; margin-top: 2px; }
+  .checklist-group { margin-bottom: 28px; }
+  .checklist-group h3 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--green); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid var(--green-light); }
+
+  /* SWITCH BADGE */
+  .switch-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--green-dark); color: white; font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 20px; margin: 4px 0; }
+
+  footer { text-align: center; padding: 32px; font-size: 12px; color: var(--gray-500); border-top: 1px solid var(--gray-200); margin-top: 40px; }
+
+  @media (max-width: 600px) {
+    .new-grid { grid-template-columns: 1fr; }
+    .options-grid { grid-template-columns: 1fr; }
+  }
+</style>
+<style>
+  /* ── VERSION BAR ── */
+  .version-bar {
+    background: #0f1923;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .version-bar .vb-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #6b7280;
+    font-family: 'DM Mono', monospace;
+  }
+  .version-bar .vb-left strong { color: #9ca3af; }
+  .version-tabs {
+    display: flex;
+    gap: 4px;
+  }
+  .vtab {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    color: #6b7280;
+    background: transparent;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .vtab:hover { color: #d1d5db; background: rgba(255,255,255,0.06); }
+  .vtab.active { background: #2d6a4f; color: white; border-color: #2d6a4f; }
+  .vtab.latest::after { content: " · Latest"; font-size: 10px; opacity: 0.7; }
+  .version-panel { display: none; }
+  .version-panel.active { display: block; }
+  .version-banner {
+    background: #fef3c7;
+    border-bottom: 1px solid #fcd34d;
+    padding: 10px 24px;
+    font-size: 13px;
+    color: #78350f;
+    text-align: center;
+  }
+  .version-banner a { color: #92400e; font-weight: 600; text-decoration: underline; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- VERSION BAR -->
+<div class="version-bar">
+  <div class="vb-left">
+    <strong>SAGE Companion</strong> &nbsp;·&nbsp; Testing Instructions
+  </div>
+  <div class="version-tabs">
+    <a class="vtab" onclick="switchVersion('v1', this)">v1 &nbsp;·&nbsp; May 2025</a>
+    <a class="vtab active latest" onclick="switchVersion('v2', this)">v2 &nbsp;·&nbsp; Jul 2025</a>
+  </div>
+</div>
+
+<!-- V2 PANEL (LATEST) -->
+<div class="version-panel active" id="panel-v2">
+<header>
+  <div class="badge">Internal · Testing Environment</div>
+  <h1>SAGE Companion</h1>
+  <p>Testing Instructions &nbsp;·&nbsp; Version 3 &nbsp;·&nbsp; July 2025</p>
+</header>
+
+<div class="meta-bar">
+  <div class="meta-item">🌐 <strong>App:</strong> <a href="https://app-dev.companionsforelders.com/" target="_blank">app-dev.companionsforelders.com</a></div>
+  <div class="meta-item">🔐 <strong>Admin:</strong> <a href="https://app-dev.companionsforelders.com/admin/login" target="_blank">app-dev.companionsforelders.com/admin/login</a></div>
+  <div class="meta-item">👤 <strong>Admin login:</strong> admin@sage-companion.com &nbsp;/&nbsp; AdminPassword123!</div>
+</div>
+
+<div class="container">
+
+  <!-- TOC -->
+  <nav class="toc">
+    <h3>Sections</h3>
+    <div class="toc-grid">
+      <a href="#whats-new"><span class="num">🆕</span> What's New</a>
+      <a href="#browser"><span class="num">→</span> Browser Setup</a>
+      <a href="#stripe"><span class="num">💳</span> Stripe Cards</a>
+      <a href="#checklist"><span class="num">✓</span> Checklist</a>
+      <a href="#feedback"><span class="num">📝</span> Report a Bug</a>
+    </div>
+  </nav>
+
+  <!-- FEEDBACK SECTION -->
+  <div class="section" id="feedback" style="border-color: #bfdbfe;">
+    <div class="section-header" style="background: #1e40af;"><span class="icon">📝</span><h2>Report a Bug or Feedback</h2></div>
+    <div class="section-body">
+      <p style="font-size:14px; color:var(--gray-700); margin-bottom:20px;">As you test, log every bug, UI issue, or suggestion using the form below. This goes directly to the dev team.</p>
+
+      <div style="background:var(--blue-light); border:1px solid var(--blue-border); border-radius:10px; padding:20px 24px; margin-bottom:24px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+        <div style="flex:1; min-width:200px;">
+          <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--blue); margin-bottom:4px; font-family:'DM Mono', monospace;">Bug &amp; Feedback Form</div>
+          <div style="font-size:15px; font-weight:600; color:#1e3a5f; margin-bottom:2px;">SAGE Companion — Bug &amp; Feedback Report</div>
+          <div style="font-size:13px; color:var(--blue);">forms.gle/joo7cJgGxE2Knf2u8</div>
+        </div>
+        <a href="https://forms.gle/joo7cJgGxE2Knf2u8" target="_blank" style="display:inline-block; background:var(--blue); color:white; font-size:14px; font-weight:600; padding:10px 20px; border-radius:8px; text-decoration:none; white-space:nowrap;">Open Form →</a>
+      </div>
+
+      <p class="sub-heading">Form Fields</p>
+      <ol class="steps">
+        <li><strong>Your Name</strong> — so the dev team knows who to follow up with if they need more details</li>
+        <li><strong>User Role</strong> — select the role you were testing as when the issue occurred (Elder, Caretaker, Caregiver, or Admin)</li>
+        <li><strong>Issue Description</strong> — describe what happened, what you expected to happen, and which screen or step you were on. The more detail the better.</li>
+        <li><strong>Screenshot / Recording</strong> (optional) — attach a screenshot or screen recording if you have one. This significantly speeds up the dev team's ability to reproduce and fix the issue.</li>
+      </ol>
+
+      <div class="callout note" style="margin-top:20px;">
+        <span class="ci">ℹ️</span>
+        <span>Submit a <strong>separate entry for each issue</strong> — do not combine multiple bugs in one submission. This keeps tracking clean for the dev team.</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WHAT'S NEW -->
+  <div class="whats-new" id="whats-new">
+    <div class="whats-new-header"><span class="icon">🆕</span><h2>What's New in This Build</h2></div>
+    <div class="whats-new-body">
+      <p style="font-size:13.5px; color:var(--gray-500); margin-bottom:16px;">Elder and Caretaker workflows are now in testing ahead of launch next week. Key updates since the last round:</p>
+      <div class="new-grid">
+        <div class="new-item"><span class="ni">💬</span> Support chat — message auto-creates a ticket, admin replies and closes from /admin/support, closed tickets archived, new message opens a fresh ticket.</div>
+        <div class="new-item"><span class="ni">✅</span> Elder consent via email — Elder receives a confirmation email when Caretaker adds them and must click to consent before access is granted.</div>
+        <div class="new-item"><span class="ni">📋</span> Consolidated booking view for Caretakers — all bookings across linked Sages visible directly without impersonation.</div>
+        <div class="new-item"><span class="ni">📅</span> Multi-date &amp; recurring bookings now supported.</div>
+        <div class="new-item"><span class="ni">🔤</span> Confusing terminology updated — "Active Sages," "View as Sage," "Primary caretaker," care role labels revised for clarity.</div>
+        <div class="new-item"><span class="ni">🔄</span> Companion onboarding flow fully revamped — sign-up, last screen, and admin bar UX improved.</div>
+        <div class="new-item"><span class="ni">🏦</span> Companion can accept up to 3 bookings before Stripe identity verification is complete.</div>
+        <div class="new-item"><span class="ni">⏰</span> Check-in flow updated — "On My Way" available anytime, check-in button unlocks 5 minutes before booking start.</div>
+        <div class="new-item"><span class="ni">💰</span> Pricing updated — late-night premium (10pm–6am), weekend premium (Sat/Sun), premium range now $35–$40.</div>
+        <div class="new-item"><span class="ni">🇪🇸</span> Spanish language support — sign-up, login, cancellation policy, terms, and refund policy pages.</div>
+        <div class="new-item"><span class="ni">🚫</span> Application rejection — screens now show a general message only; reason/notes stripped from emails and SMS but retained in admin panel.</div>
+        <div class="new-item"><span class="ni">📧</span> Caretaker email change — verified via link to old inbox, all sessions revoked on change, user signs back in with new email.</div>
+        <div class="new-item"><span class="ni">⚖️</span> Dispute resolution — Elder files dispute or auto-created on denial, payment held, admin reviews and picks resolution (full refund / full pay / 50–50 split), Stripe executes automatically.</div>
+        <div class="new-item"><span class="ni">🚫</span> No-show policy — account auto-deactivated; admin can manually reactivate.</div>
+        <div class="new-item"><span class="ni">🛡️</span> Emergency cancellation exceptions — admin can apply override in admin panel to waive the 50% charge.</div>
+      </div>
+
+      
+    </div>
+  </div>
+
+  <!-- BROWSER SETUP -->
+  <div class="browser-setup" id="browser">
+    <h2>⚠️ Browser Setup — Avoid Login Conflicts</h2>
+    <p style="font-size:14px; color:var(--gray-700); margin-bottom:16px;">You'll be testing multiple user types simultaneously. Each needs its own isolated browser session.</p>
+    <div class="options-grid">
+      <div class="option-card">
+        <div class="option-title">Chrome Profiles (Recommended)</div>
+        <ul>
+          <li>Profile 1 — Admin</li>
+          <li>Profile 2 — Caregiver</li>
+          <li>Profile 3 — Elder</li>
+          <li>Profile 4 — Caretaker</li>
+        </ul>
+      </div>
+      <div class="option-card">
+        <div class="option-title">Different Browsers</div>
+        <ul>
+          <li>Chrome — Admin</li>
+          <li>Safari — Caregiver</li>
+          <li>Firefox — Elder</li>
+          <li>Edge — Caretaker</li>
+        </ul>
+      </div>
+      <div class="option-card">
+        <div class="option-title">Incognito Windows</div>
+        <ul>
+          <li>Regular — Admin</li>
+          <li>Incognito 1 — Caregiver</li>
+          <li>Incognito 2 — Elder</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout warn" style="margin-top:16px; margin-bottom:0;">
+      <span class="ci">⚠️</span>
+      <span>This matters most when testing caregiver onboarding — you need Admin to approve stages while staying logged in as Caregiver simultaneously.</span>
+    </div>
+  </div>
+
+  <!-- WHAT IS WORKING -->
+  <div class="section" style="margin-bottom:32px;">
+    <div class="section-header"><span class="icon">✅</span><h2>What Is Working</h2></div>
+    <div class="section-body">
+      <div class="working-grid">
+        <div class="working-item">Registration &amp; onboarding (all users)</div>
+        <div class="working-item">Browse caregivers with filters</div>
+        <div class="working-item">Booking creation &amp; management</div>
+        <div class="working-item">Multi-date &amp; recurring bookings</div>
+        <div class="working-item">Elder consent via email for Caretaker access</div>
+        <div class="working-item">Consolidated booking view for Caretakers</div>
+        <div class="working-item">Check-in / check-out flow</div>
+        <div class="working-item">In-app support chat with ticket system</div>
+        <div class="working-item">Caregiver 3-stage onboarding (revamped)</div>
+        <div class="working-item">Admin application &amp; background check review</div>
+        <div class="working-item">Admin manual booking actions</div>
+        <div class="working-item">Caregiver Stripe Connect &amp; earnings</div>
+        <div class="working-item">Auto caregiver payout after dispute window</div>
+        <div class="working-item">Late-night &amp; weekend premium pricing</div>
+        <div class="working-item">Cancellation policy with emergency override</div>
+        <div class="working-item">No-show auto-deactivation</div>
+        <div class="working-item">California-only address enforcement</div>
+        <div class="working-item">Spanish language support</div>
+        <div class="working-item">Review system &amp; 4-hour auto-completion</div>
+        <div class="working-item">Dispute resolution with Stripe auto-execution</div>
+        <div class="working-item">Application rejection — general message only, reason in admin</div>
+        <div class="working-item">Caretaker email change with session revocation</div>
+      </div>
+      
+    </div>
+  </div>
+
+  <div class="section" id="stripe">
+    <div class="section-header"><span class="icon">💳</span><h2>Stripe Test Cards</h2></div>
+    <div class="section-body">
+
+      <div class="callout warn">
+        <span class="ci">⚠️</span>
+        <span>Never use real card details. Use any future expiry date (e.g. <code class="card-mono">12/34</code>) and any 3-digit CVC unless noted.</span>
+      </div>
+
+      <p class="sub-heading">Successful Payments</p>
+      <table class="data-table">
+        <thead><tr><th>Card Type</th><th>Card Number</th><th>CVC</th></tr></thead>
+        <tbody>
+          <tr><td>Visa</td><td><code class="card-mono">4242 4242 4242 4242</code></td><td>Any 3 digits</td></tr>
+          <tr><td>Visa (debit)</td><td><code class="card-mono">4000 0566 5566 5556</code></td><td>Any 3 digits</td></tr>
+          <tr><td>Mastercard</td><td><code class="card-mono">5555 5555 5555 4444</code></td><td>Any 3 digits</td></tr>
+          <tr><td>Mastercard (debit)</td><td><code class="card-mono">5200 8282 8282 8210</code></td><td>Any 3 digits</td></tr>
+          <tr><td>American Express</td><td><code class="card-mono">3782 822463 10005</code></td><td>Any 4 digits</td></tr>
+        </tbody>
+      </table>
+
+      <p class="sub-heading">Declined Payments</p>
+      <table class="data-table">
+        <thead><tr><th>Scenario</th><th>Card Number</th></tr></thead>
+        <tbody>
+          <tr><td>Generic decline</td><td><code class="card-mono">4000 0000 0000 0002</code></td></tr>
+          <tr><td>Insufficient funds</td><td><code class="card-mono">4000 0000 0000 9995</code></td></tr>
+          <tr><td>Expired card</td><td><code class="card-mono">4000 0000 0000 0069</code></td></tr>
+          <tr><td>Incorrect CVC</td><td><code class="card-mono">4000 0000 0000 0127</code></td></tr>
+        </tbody>
+      </table>
+
+      <p class="sub-heading">Stripe Connect — Caregiver Payout Setup</p>
+      <table class="data-table">
+        <thead><tr><th>Field</th><th>Test Value</th></tr></thead>
+        <tbody>
+          <tr><td>SSN (last 4)</td><td><code class="card-mono">0000</code></td></tr>
+          <tr><td>Routing Number</td><td><code class="card-mono">110000000</code></td></tr>
+          <tr><td>Account Number</td><td><code class="card-mono">000123456789</code></td></tr>
+          <tr><td>Date of Birth</td><td>Any date making the person 18+</td></tr>
+          <tr><td>Address</td><td>Any valid CA address (e.g. 123 Main St, Los Angeles, CA 90001)</td></tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+  <!-- ══ CHECKLIST ══ -->
+  <div class="section" id="checklist">
+    <div class="section-header"><span class="icon">☑️</span><h2>Testing Checklist</h2></div>
+    <div class="section-body">
+
+      <p style="font-size:13.5px; color:var(--gray-500); margin-bottom:24px;">This checklist covers only new and updated features since the last testing round. Previously verified items are not included. Focus your testing here.</p>
+
+      <div class="checklist-group">
+        <h3>Elder</h3>
+        <ul class="checklist">
+          <li><span class="box"></span> Elder consent email — add as a Caretaker's elder and verify confirmation email arrives and consent button works</li>
+          <li><span class="box"></span> Multi-date / recurring booking — create a booking across multiple dates and verify it saves correctly</li>
+          <li><span class="box"></span> Late-night premium (10pm–6am) — verify premium pricing applied at checkout</li>
+          <li><span class="box"></span> Weekend premium (Sat/Sun) — verify premium pricing applied at checkout</li>
+          <li><span class="box"></span> Support chat — send a message, verify ticket auto-created, receive admin reply</li>
+          <li><span class="box"></span> After admin closes ticket — verify chat clears and welcome message appears</li>
+          <li><span class="box"></span> Send new message after closure — verify a new ticket opens</li>
+          <li><span class="box"></span> Dispute — file a dispute after checkout, verify payment is held and booking moves to Disputed state</li>
+          <li><span class="box"></span> Dispute resolved — verify no rating or strike applied</li>
+          <li><span class="box"></span> Spanish — verify sign-up, login, cancellation policy, terms, and refund policy display in Spanish</li>
+          <li><span class="box"></span> Application rejection screen — verify only general message shown, no reason or notes visible</li>
+        </ul>
+      </div>
+
+      <div class="checklist-group">
+        <h3>Caretaker</h3>
+        <ul class="checklist">
+          <li><span class="box"></span> Add elder — verify elder receives consent confirmation email</li>
+          <li><span class="box"></span> Elder clicks email consent — verify Caretaker access is granted only after confirmation</li>
+          <li><span class="box"></span> Consolidated booking view — verify all bookings across linked Sages visible without impersonation</li>
+          <li><span class="box"></span> Booking marked as caretaker-initiated — verify companion can see it was booked on behalf of an elder</li>
+          <li><span class="box"></span> Email change — enter new email, verify link sent to old inbox, click link, verify all sessions revoked and sign-in with new email works</li>
+          <li><span class="box"></span> Support chat — open ticket, receive reply, verify 1 active ticket limit</li>
+          <li><span class="box"></span> Spanish — verify key pages display correctly in Spanish</li>
+        </ul>
+      </div>
+
+      <div class="checklist-group">
+        <h3>Caregiver (Companion) — Light Recheck</h3>
+        <ul class="checklist">
+          <li><span class="box"></span> "On My Way" button available anytime on upcoming booking</li>
+          <li><span class="box"></span> Check-in button unlocks 5 minutes before booking start</li>
+          <li><span class="box"></span> Can accept up to 3 bookings before Stripe verification complete</li>
+          <li><span class="box"></span> Support chat accessible and working</li>
+          <li><span class="box"></span> No strike or rating impact when dispute is raised against a booking</li>
+        </ul>
+      </div>
+
+      <div class="checklist-group">
+        <h3>Admin</h3>
+        <ul class="checklist">
+          <li><span class="box"></span> Support tickets visible in /admin/support — reply to user, close ticket</li>
+          <li><span class="box"></span> Closed tickets visible in Closed tab for history</li>
+          <li><span class="box"></span> Disputed bookings visible in /admin/bookings Disputed tab</li>
+          <li><span class="box"></span> Review dispute — check-in/out logs, photos, caregiver notes</li>
+          <li><span class="box"></span> Resolve dispute — full refund to elder</li>
+          <li><span class="box"></span> Resolve dispute — full pay to caregiver</li>
+          <li><span class="box"></span> Resolve dispute — 50/50 split — verify Stripe executes automatically and ledger updates</li>
+          <li><span class="box"></span> Rejected application — verify reason and notes visible in admin but not shown to applicant</li>
+          <li><span class="box"></span> Emergency cancellation override — apply waiver for 50% charge</li>
+          <li><span class="box"></span> No-show — manually reactivate a deactivated account</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  SAGE Companion &nbsp;·&nbsp; Testing Instructions v2 &nbsp;·&nbsp; Confidential &nbsp;·&nbsp; May 2025
+</footer>
+</div>
+
+<!-- V1 PANEL -->
+<div class="version-panel" id="panel-v1">
+  <div class="version-banner">
+    ⚠️ You are viewing an older version (v1 · May 2025). <a onclick="switchVersion('v2', document.querySelectorAll('.vtab')[1])">Switch to latest →</a>
+  </div>
+
+  <div style="max-width:860px; margin:0 auto; padding:48px 24px 80px;">
+
+    <div style="background:white; border:1px solid #d1d5db; border-radius:10px; margin-bottom:32px; overflow:hidden;">
+      <div style="background:#2d6a4f; padding:18px 28px;">
+        <h2 style="font-family:'DM Serif Display',serif; font-size:20px; font-weight:400; color:white;">v1 — May 2025 Snapshot</h2>
+      </div>
+      <div style="padding:28px;">
+        <p style="font-size:14px; color:#6b7280; margin-bottom:20px;">This was the initial testing round covering caregiver onboarding and the core booking flow.</p>
+
+        <p style="font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:#2d6a4f; margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid #d8f3dc;">What Was Working</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:8px; margin-bottom:24px;">
+          <div style="background:#f0faf3; border:1px solid #d8f3dc; border-radius:7px; padding:8px 12px; font-size:13px; color:#1a4731; display:flex; align-items:center; gap:8px;">✅ Registration &amp; onboarding (all users)</div>
+          <div style="background:#f0faf3; border:1px solid #d8f3dc; border-radius:7px; padding:8px 12px; font-size:13px; color:#1a4731; display:flex; align-items:center; gap:8px;">✅ Browse caregivers with filters</div>
+          <div style="background:#f0faf3; border:1px solid #d8f3dc; border-radius:7px; padding:8px 12px; font-size:13px; color:#1a4731; display:flex; align-items:center; gap:8px;">✅ Booking creation &amp; management</div>
+          <div style="background:#f0faf3; border:1px solid #d8f3dc; border-radius:7px; padding:8px 12px; font-size:13px; color:#1a4731; display:flex; align-items:center; gap:8px;">✅ Elder impersonation by Caretakers</div>
+          <div style="background:#f0faf3; border:1px solid #d8f3dc; border-radius:7px; padding:8px 12px; font-size:13px; color:#1a4731; display:flex; align-items:center; gap:8px;">✅ Caregiver 3-stage onboarding</div>
+          <div style="background:#f0faf3; border:1px solid #d8f3dc; border-radius:7px; padding:8px 12px; font-size:13px; color:#1a4731; display:flex; align-items:center; gap:8px;">✅ Admin application &amp; background check review</div>
+          <div style="background:#f0faf3; border:1px solid #d8f3dc; border-radius:7px; padding:8px 12px; font-size:13px; color:#1a4731; display:flex; align-items:center; gap:8px;">✅ Stripe payment integration (sandbox)</div>
+          <div style="background:#f0faf3; border:1px solid #d8f3dc; border-radius:7px; padding:8px 12px; font-size:13px; color:#1a4731; display:flex; align-items:center; gap:8px;">✅ In-app chat (booking lifecycle)</div>
+          <div style="background:#f0faf3; border:1px solid #d8f3dc; border-radius:7px; padding:8px 12px; font-size:13px; color:#1a4731; display:flex; align-items:center; gap:8px;">✅ California-only address enforcement</div>
+        </div>
+
+        <p style="font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:#2d6a4f; margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid #d8f3dc;">Checklist — v1</p>
+        <ul style="list-style:none; padding:0;">
+          <li style="display:flex; gap:10px; padding:7px 0; font-size:14px; color:#374151; border-bottom:1px solid #f3f4f6;"><span style="width:18px;height:18px;border:2px solid #d1d5db;border-radius:4px;flex-shrink:0;margin-top:2px;"></span> Sign up and complete profile (all roles)</li>
+          <li style="display:flex; gap:10px; padding:7px 0; font-size:14px; color:#374151; border-bottom:1px solid #f3f4f6;"><span style="width:18px;height:18px;border:2px solid #d1d5db;border-radius:4px;flex-shrink:0;margin-top:2px;"></span> Browse caregivers with filters and sorting</li>
+          <li style="display:flex; gap:10px; padding:7px 0; font-size:14px; color:#374151; border-bottom:1px solid #f3f4f6;"><span style="width:18px;height:18px;border:2px solid #d1d5db;border-radius:4px;flex-shrink:0;margin-top:2px;"></span> 4-hour minimum booking window enforced</li>
+          <li style="display:flex; gap:10px; padding:7px 0; font-size:14px; color:#374151; border-bottom:1px solid #f3f4f6;"><span style="width:18px;height:18px;border:2px solid #d1d5db;border-radius:4px;flex-shrink:0;margin-top:2px;"></span> Complete payment with Stripe test card</li>
+          <li style="display:flex; gap:10px; padding:7px 0; font-size:14px; color:#374151; border-bottom:1px solid #f3f4f6;"><span style="width:18px;height:18px;border:2px solid #d1d5db;border-radius:4px;flex-shrink:0;margin-top:2px;"></span> Caregiver 3-stage onboarding with admin approvals</li>
+          <li style="display:flex; gap:10px; padding:7px 0; font-size:14px; color:#374151; border-bottom:1px solid #f3f4f6;"><span style="width:18px;height:18px;border:2px solid #d1d5db;border-radius:4px;flex-shrink:0;margin-top:2px;"></span> Admin review and approve Stage 1 &amp; Stage 2</li>
+          <li style="display:flex; gap:10px; padding:7px 0; font-size:14px; color:#374151; border-bottom:1px solid #f3f4f6;"><span style="width:18px;height:18px;border:2px solid #d1d5db;border-radius:4px;flex-shrink:0;margin-top:2px;"></span> Caretaker impersonation of elder</li>
+          <li style="display:flex; gap:10px; padding:7px 0; font-size:14px; color:#374151;"><span style="width:18px;height:18px;border:2px solid #d1d5db;border-radius:4px;flex-shrink:0;margin-top:2px;"></span> In-app chat after booking confirmed</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchVersion(version, el) {
+    document.querySelectorAll('.version-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.vtab').forEach(t => t.classList.remove('active'));
+    document.getElementById('panel-' + version).classList.add('active');
+    el.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
